@@ -98,6 +98,12 @@ Main() {
         Error "Only 64-bit (x86_64) distributions are supported."
     fi
     
+    Log "Warning - The Windows version of iOS-OTA-Downgrader is no longer supported."
+    Echo "* I recommend using iOS-OTA-Downgrader on Linux or macOS instead."
+    Echo "* Read the \"Troubleshooting\" wiki page for more details."
+    Input "Press Enter/Return to continue anyway (or press Ctrl+C to cancel)"
+    read -s
+
     if [[ $1 == "Install" || ! $bspatch || ! $ideviceinfo || ! $irecoverychk || ! $python ||
           ! -d ./resources/libimobiledevice_$platform ]]; then
         Clean

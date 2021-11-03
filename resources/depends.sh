@@ -2,54 +2,14 @@
 
 SetToolPaths() {
     MPath="./resources/libimobiledevice_"
-    if [[ $OSTYPE == "linux"* ]]; then
-        . /etc/os-release 2>/dev/null
-        platform="linux"
-        platformver="$PRETTY_NAME"
-        MPath+="$platform"
-        bspatch="$(which bspatch)"
-        futurerestore="sudo LD_LIBRARY_PATH=./resources/lib ./resources/tools/futurerestore_linux"
-        futurerestore2="sudo LD_LIBRARY_PATH=./resources/lib ./resources/tools/futurerestore2_linux"
-        idevicerestore="sudo LD_LIBRARY_PATH=./resources/lib ./resources/tools/idevicerestore_linux"
-        python="$(which python2)"
-        ipwndfu="sudo $python ipwndfu"
-        rmsigchks="sudo $python rmsigchks.py"
-        SimpleHTTPServer="sudo -b $python -m SimpleHTTPServer 8888"
-        zenity="$(which zenity)"
-
-    elif [[ $OSTYPE == "darwin"* ]]; then
-        platform="macos"
-        platformver="${1:-$(sw_vers -productVersion)}"
-        MPath+="$platform"
-        if [[ -e /usr/local/bin/idevicedate && -e /usr/local/bin/irecovery ]]; then
-            Log "Detected libimobiledevice and libirecovery installed from Homebrew (Intel Mac)"
-            MPath="/usr/local/bin"
-        elif [[ -e /opt/homebrew/bin/idevicedate && -e /opt/homebrew/bin/irecovery ]]; then
-            Log "Detected libimobiledevice and libirecovery installed from Homebrew (Apple Silicon)"
-            MPath="/opt/homebrew/bin"
-        elif [[ -e /opt/local/bin/idevicedate && -e /opt/local/bin/irecovery ]]; then
-            Log "Detected libimobiledevice and libirecovery installed from MacPorts"
-            MPath="/opt/local/bin"
-        fi
-        bspatch="/usr/bin/bspatch"
-        futurerestore="./resources/tools/futurerestore_macos_$(uname -m)"
-        [[ ! -e $futurerestore ]] && futurerestore="./resources/tools/futurerestore_macos_arm64"
-        futurerestore2="./resources/tools/futurerestore2_macos"
-        idevicerestore="./resources/tools/idevicerestore_macos"
-        ipwnder32="./resources/tools/ipwnder32_macos"
-        python="/usr/bin/python"
-        ipwndfu="$python ipwndfu"
-        rmsigchks="$python rmsigchks.py"
-        SimpleHTTPServer="$python -m SimpleHTTPServer 8888"
-        zenity="./resources/tools/zenity_macos"
-
-    elif [[ $OSTYPE == "msys" ]]; then
+    if [[ $OSTYPE == "msys" ]]; then
         platform="win"
         MPath+="$platform"
         bspatch="./resources/tools/bspatch_win"
         futurerestore2="./resources/tools/futurerestore2_win"
         idevicerestore="./resources/tools/idevicerestore_win"
         python=/
+        Log "Running on platform: windows"
     fi
     git="$(which git)"
     ideviceenterrecovery="$MPath/ideviceenterrecovery"
@@ -64,8 +24,6 @@ SetToolPaths() {
     SCP="$(which scp) $SSH"
     SSH="$(which ssh) $SSH"
     tsschecker="./resources/tools/tsschecker_$platform"
-
-    Log "Running on platform: $platform ($platformver)"
 }
 
 SaveExternal() {
