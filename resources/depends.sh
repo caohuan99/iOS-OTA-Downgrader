@@ -36,7 +36,14 @@ SetToolPaths() {
         [[ ! -e $futurerestore ]] && futurerestore="./resources/tools/futurerestore_macos_arm64"
         ipwnder32="./resources/tools/ipwnder32_macos"
         python="/usr/bin/python"
-        zenity="./resources/tools/zenity_macos"
+
+    elif [[ $OSTYPE == "msys" ]]; then
+        platform="win"
+        platformver="$(cmd /c ver)"
+        MPath+="$platform"
+        bspatch="./resources/tools/bspatch_win"
+        futurerestore="./resources/tools/futurerestore_win"
+        python=/
     fi
 
     git="$(which git)"
@@ -61,6 +68,8 @@ SetToolPaths() {
         ipwndfu="sudo $ipwndfu"
         irecovery="sudo LD_LIBRARY_PATH=./resources/lib $irecovery"
         rmsigchks="sudo $rmsigchks"
+    else
+        zenity="./resources/tools/zenity_$platform"
     fi
 
     Log "Running on platform: $platform ($platformver)"
@@ -137,6 +146,15 @@ InstallDepends() {
         Echo "* The script will detect this automatically and will use the Homebrew versions of the tools"
         Echo "* Install using this command: 'brew install libimobiledevice libirecovery'"
 
+    elif [[ $platform == "win" ]]; then
+        pacman -Sy --noconfirm --needed ca-certificates curl openssh unzip zip
+        Error "tools need to be updated with zenity and new futurerestore beta for windows"
+        Log "Downloading Windows tools..."
+        SaveFile https://github.com/LukeZGD/iOS-OTA-Downgrader-Keys/releases/download/tools/tools_win.zip tools_win.zip 1929c04f6f699f5e423bd9ca7ecc855a9b4f8f7c
+        Log "Extracting Windows tools..."
+        unzip -oq tools_win.zip -d ../resources/tools
+        libimobiledevice=("https://github.com/LukeZGD/iOS-OTA-Downgrader-Keys/releases/download/tools/libimobiledevice_win.zip" "3ed553415cc669b5c467a5f3cd78f692f7149adb")
+
     else
         Error "Distro not detected/supported by the install script." "See the repo README for supported OS versions/distros"
     fi
@@ -158,5 +176,10 @@ InstallDepends() {
 
     cd ..
     Log "Install script done! Please run the script again to proceed"
+
+    if [[ $platform == "win" ]]; then
+        Input "Press Enter/Return to exit."
+        read -s
+    fi
     exit 0
 }

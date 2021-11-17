@@ -167,10 +167,12 @@ Downgrade() {
 
     Log "Proceeding to futurerestore..."
     [[ $platform == "linux" ]] && Echo "* Enter root password of your PC when prompted"
-    cd resources
-    $SimpleHTTPServer &
-    ServerPID=$!
-    cd ..
+    if [[ $platform != "win" ]]; then
+        cd resources
+        $SimpleHTTPServer &
+        ServerPID=$!
+        cd ..
+    fi
 
     if [[ $DeviceProc == 7 ]]; then
         # Send dummy file for device detection

@@ -18,7 +18,7 @@ JailbreakSet() {
 }
 
 MemoryOption() {
-    if [[ $Jailbreak == 1 && $Verify == 1 ]]; then
+    if [[ $Jailbreak == 1 && $Verify == 1 && $platform != "win" ]]; then
         Input "Memory Option for creating custom IPSW"
         Echo "* This option makes creating the custom IPSW faster, but it requires at least 8GB of RAM."
         Echo "* If you do not have enough RAM, disable this option and make sure that you have enough storage space."

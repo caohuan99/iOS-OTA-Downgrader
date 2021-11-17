@@ -32,6 +32,10 @@ Error() {
     echo -e "\n${Color_R}[Error] $1 ${Color_N}"
     [[ -n $2 ]] && echo "${Color_R}* $2 ${Color_N}"
     echo
+    if [[ $platform == "win" ]]; then
+        Input "Press Enter/Return to exit."
+        read -s
+    fi
     exit 1
 }
 
@@ -92,7 +96,9 @@ Main() {
         InstallDepends
     fi
     
-    SaveExternal LukeZGD ipwndfu
+    if [[ $platform != "win" ]]; then
+        SaveExternal LukeZGD ipwndfu
+    fi
 
     GetDeviceValues $1
     
@@ -143,10 +149,31 @@ Main() {
 
     elif [[ $Mode != "Downgrade" ]]; then
         $Mode
+        if [[ $platform == "win" ]]; then
+            Input "Press Enter/Return to exit."
+            read -s
+        fi
         exit 0
     fi
 
-    if [[ $DeviceProc == 7 ]]; then
+    if [[ $DeviceProc == 7 && $platform == "win" ]]; then
+        local Message="If you want to restore your A7 device on Windows, put the device in pwnDFU mode."
+        if [[ $DeviceState == "Normal" ]]; then
+            Error "$Message"
+        elif [[ $DeviceState == "Recovery" ]]; then
+            Log "A7 device detected in recovery mode."
+            Log "$Message"
+            RecoveryExit
+        elif [[ $DeviceState == "DFU" ]]; then
+            Log "A7 device detected in DFU mode."
+            Echo "* Make sure that your device is already in pwnDFU mode with signature checks disabled."
+            Echo "* If your device is not in pwnDFU mode, the restore will not proceed!"
+            Echo "* Entering pwnDFU mode is not supported on Windows. You need to use a Mac/Linux machine or another iOS device to do so."
+            Input "Press Enter/Return to continue (or press Ctrl+C to cancel)"
+            read -s
+        fi
+
+    elif [[ $DeviceProc == 7 ]]; then
         if [[ $DeviceState == "Normal" ]]; then
             Echo "* The device needs to be in recovery/DFU mode before proceeding."
             read -p "$(Input 'Send device to recovery mode? (y/N):')" Selection
@@ -162,8 +189,10 @@ Main() {
         Echo "* Advanced Options Menu"
         Input "This device is in:"
         Selection=("kDFU mode")
-        [[ $DeviceProc == 5 ]] && Selection+=("pwnDFU mode (A5)")
-        [[ $DeviceProc == 6 ]] && Selection+=("DFU mode (A6)")
+        if [[ $platform != "win" ]]; then
+            [[ $DeviceProc == 5 ]] && Selection+=("pwnDFU mode (A5)")
+            [[ $DeviceProc == 6 ]] && Selection+=("DFU mode (A6)")
+        fi
         Selection+=("Any other key to exit")
         select opt in "${Selection[@]}"; do
         case $opt in
@@ -181,7 +210,7 @@ Main() {
         Log "Downgrading $ProductType in kDFU/pwnDFU mode..."
     
     elif [[ $DeviceState == "Recovery" ]]; then
-        if [[ $DeviceProc == 6 ]]; then
+        if [[ $DeviceProc == 6 && $platform != "win" ]]; then
             Recovery
         else
             Log "32-bit A${DeviceProc} device detected in recovery mode."
@@ -193,6 +222,11 @@ Main() {
     fi
     
     Downgrade
+
+    if [[ $platform == "win" ]]; then
+        Input "Press Enter/Return to exit."
+        read -s
+    fi
     exit 0
 }
 

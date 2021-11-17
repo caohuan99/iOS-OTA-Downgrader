@@ -67,7 +67,7 @@ GetDeviceValues() {
     if [[ ! $DeviceState ]]; then
         echo -e "\n${Color_R}[Error] No device detected. Please put the device in normal mode before proceeding. ${Color_N}"
         echo "${Color_Y}* Make sure to also trust this computer by selecting \"Trust\" at the pop-up. ${Color_N}"
-        echo "${Color_Y}* For macOS users, double-check if the device is being detected by iTunes/Finder. ${Color_N}"
+        echo "${Color_Y}* For Windows/macOS users, double-check if the device is being detected by iTunes/Finder. ${Color_N}"
         echo "${Color_Y}* Recovery or DFU mode is also applicable. For more details regarding alternative methods, read the \"Troubleshooting\" wiki page in GitHub ${Color_N}"
         echo "${Color_Y}* To perform operations without an iOS device connected, add NoDevice as an argument. Example: ./restore.sh NoDevice ${Color_N}"
         exit 1
